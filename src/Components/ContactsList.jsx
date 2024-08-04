@@ -9,7 +9,7 @@ const ContactsList = ({ data, error }) => {
       {error ? (
         <div>Error</div>
       ) : (
-        <ul>
+        <ul className="w-full">
           {data.map((item) => (
             <li key={item.id}>
               <ContactItem contact={item} />
