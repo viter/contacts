@@ -5,7 +5,6 @@ const ContactItem = ({ contact }) => {
   const lastName = contact.fields['last name'] ? contact.fields['last name'][0].value : '';
   const email = contact.fields.email ? contact.fields.email[0].value : '';
   const avatar = contact.avatar_url;
-  console.log(firstName);
   return (
     <Link to={`contact/${contact.id}`}>
       <div className="flex my-3 w-full bg-neutral-300 p-3 rounded-md shadow-sm dark:bg-neutral-600">
