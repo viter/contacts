@@ -11,21 +11,23 @@ const Root = () => {
   };
 
   useEffect(() => {
-    console.log(mode);
+    document.body.classList.remove('light', 'dark');
+    document.body.classList.add(mode);
   }, [mode]);
   return (
-    <div className={clsx(mode, 'bg-slate-100 dark:bg-slate-700 h-screen')}>
-      <main className="max-w-[1280px] min-w-[400px] w-[1000px] ml-auto mr-auto">
-        <div className="flex justify-center pt-5 mb-12" onClick={changeMode}>
-          <div className="w-8 h-8 rounded-full p-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-500 hover:cursor-pointer">
-            <img src={mode === 'dark' ? light : dark} />
-          </div>
+    <main className="max-w-[1280px] min-w-[400px] w-full ml-auto mr-auto px-3">
+      <div className="flex justify-center pt-5 mb-12 relative">
+        <div
+          className="w-8 h-8 rounded-full p-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-500 hover:cursor-pointer"
+          onClick={changeMode}
+        >
+          <img src={mode === 'dark' ? light : dark} />
         </div>
-        <div className="flex flex-col items-center justify-center">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+      </div>
+      <div className="flex items-center justify-center">
+        <Outlet />
+      </div>
+    </main>
   );
 };
 

@@ -7,6 +7,8 @@ export default function ErrorPage() {
 
   if (error.status === 404) {
     message = 'Page not found.';
+  } else {
+    message = error.message;
   }
   return (
     <div className="h-screen flex flex-col items-center justify-center">
