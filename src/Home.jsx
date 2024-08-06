@@ -4,7 +4,7 @@ import Loader from './Components/Loader';
 import { useGetContactsQuery } from './services/contacts';
 
 const App = () => {
-  const { data, error, isLoading } = useGetContactsQuery();
+  const { data, error, isLoading } = useGetContactsQuery({ sort: 'created:desc' });
 
   return (
     <>
