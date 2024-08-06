@@ -1,30 +1,74 @@
 import { useEffect, useRef, useState } from 'react';
 import FormErrors from './FormErrors';
+import { useCreateContactMutation } from '../services/contacts';
+import loader from '../assets/loader.svg';
 
 const ContactForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [formErrors, setFormErrors] = useState([]);
+  const [errors, setErrors] = useState([]);
 
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const emailRef = useRef(null);
 
-  useEffect(() => {
-    updateFormFieldsLook();
-  }, [formErrors]);
+  const [createContact, { isLoading, isError }] = useCreateContactMutation();
 
   useEffect(() => {
-    if (formErrors.length) {
+    updateFormFieldsLook();
+  }, [errors]);
+
+  useEffect(() => {
+    if (errors.length) {
       validateInput();
     }
   }, [firstName, lastName, email]);
 
   const addContact = (e) => {
     const isValid = validateInput();
-    if (isValid) {
-      console.log(email);
+    if ((firstName || lastName || email) && isValid) {
+      createContact({
+        record_type: 'person',
+        fields: {
+          email: [
+            {
+              label: 'email',
+              modifier: 'other',
+              value: email,
+              is_primary: false,
+            },
+          ],
+          'first name': [
+            {
+              label: 'first name',
+              modifier: '',
+              value: firstName,
+              is_primary: false,
+            },
+          ],
+          'last name': [
+            {
+              label: 'last name',
+              modifier: '',
+              value: lastName,
+              is_primary: false,
+            },
+          ],
+        },
+        privacy: {
+          edit: null,
+          read: null,
+        },
+        owner_id: null,
+      });
+      if (isError) {
+        setErrors((prev) => [...prev, { type: 'submit', msg: 'Contact was not saved!' }]);
+      } else {
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+      }
     }
     e.preventDefault();
   };
@@ -42,25 +86,28 @@ const ContactForm = () => {
   };
 
   const validateInput = () => {
-    setFormErrors([]);
+    setErrors([]);
     if (!firstName.trim() && !lastName.trim()) {
-      setFormErrors((prev) => [
+      setErrors((prev) => [
         ...prev,
-        { type: 'name', msg: 'Either First Name or Last Name should be filled to add a contact!' },
+        {
+          type: 'name',
+          msg: 'Either First Name or Last Name should be filled in to add a contact!',
+        },
       ]);
     }
 
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.trim())) {
-      setFormErrors((prev) => [...prev, { type: 'email', msg: 'Wrong email format!' }]);
+      setErrors((prev) => [...prev, { type: 'email', msg: 'Wrong email format!' }]);
     }
 
-    if (formErrors.length) return false;
+    if (errors.length) return false;
 
     return true;
   };
 
   const updateFormFieldsLook = () => {
-    if (hasErrorType(formErrors, 'name')) {
+    if (hasErrorType(errors, 'name')) {
       [firstNameRef.current, lastNameRef.current].map((field) => {
         field.classList.add('bg-red-200');
       });
@@ -70,7 +117,7 @@ const ContactForm = () => {
       });
     }
 
-    if (hasErrorType(formErrors, 'email')) {
+    if (hasErrorType(errors, 'email')) {
       emailRef.current.classList.add('bg-red-200');
     } else {
       emailRef.current.classList.remove('bg-red-200');
@@ -124,12 +171,12 @@ const ContactForm = () => {
             type="email"
             autoComplete="off"
           />
-          {formErrors.length ? <FormErrors errors={formErrors} /> : null}
+          {errors.length ? <FormErrors errors={errors} /> : null}
           <button
-            className="text-sm bg-neutral-300 hover:bg-opacity-50 rounded-md p-2 w-full mt-5"
+            className="text-sm bg-neutral-300 hover:bg-opacity-50 rounded-md p-2 w-full h-10 mt-5 flex justify-center items-center"
             onClick={addContact}
           >
-            Add Contact
+            {isLoading ? <img src={loader} className="w-8 h-8" /> : 'Add Contact'}
           </button>
         </form>
       </div>

@@ -12,12 +12,22 @@ export const contactsApi = createApi({
   }),
   endpoints: (builder) => ({
     getContacts: builder.query({
-      query: () => 'contacts',
+      query: (params) => ({ url: 'contacts', params }),
+      providesTags: ['Contact'],
     }),
     getContactById: builder.query({
       query: (id) => `contact/${id}`,
     }),
+    createContact: builder.mutation({
+      query: (data) => ({
+        url: `/contact`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Contact'],
+    }),
   }),
 });
 
-export const { useGetContactsQuery, useGetContactByIdQuery } = contactsApi;
+export const { useGetContactsQuery, useGetContactByIdQuery, useCreateContactMutation } =
+  contactsApi;
